@@ -1,5 +1,5 @@
 # Speedtest
-Runs a speedtest on a schedule using the speedtest.net linux binary then sends the logs to InfluxDB. You must read and accept the speedtest.net EULA before deploying this container.
+Runs a speedtest on a schedule using the speedtest.net Linux binary then sends the logs to InfluxDB. You must read and accept the speedtest.net EULA before deploying this container.
 
 ## Parameters
 
@@ -8,7 +8,7 @@ Container images are configured using parameters passed at runtime.
 | Parameter | Function |
 | :----: | --- |
 | `-h <hostname>` | Appears in InfluxDB logs. If not specified the container ID will be used. |
-| `-e TZ=Europe/London` | Specify a timezone to use e.g. Europe/London. |
+| `-e TZ=Europe/London` | Specify a time zone to use e.g. Europe/London. |
 | `-e ACCEPT_ST_EULA=1` | Once you've reviewed the speedtest.net EULA and accepted enable this environment variable. |
 | `-e ST_URL=http://<influxDB_hostname_or_IP>:8086/write` | Required URL for InfluxDB. |
 | `-e ST_TEST_SERVER_ID=123,` | Specify they speedtest server by ID. If not specified, the binary will auto-select a server. For best results, select a server from: https://telcodb.net/explore/speedtest-servers/ |
@@ -33,7 +33,7 @@ services:
     hostname: docker_speedtest
     environment:
       TZ: Pacific/Auckland
-	  ACCEPT_ST_EULA: 1
+      ACCEPT_ST_EULA: 1
       ST_URL: http://192.168.1.10:8086/write
       ST_TEST_SERVER_ID: 123
       ST_USERNAME: speedtest
