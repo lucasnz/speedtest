@@ -31,6 +31,7 @@ def main(argv):
     database_name = 'speedtest'
     username = None
     password = None
+    accept_license = ''
     
     # Set up a specific logger with our desired output level
     logger = logging.getLogger('speedtest')
@@ -48,7 +49,7 @@ def main(argv):
     logger.info("Script begin")
 
     try:
-        opts, args = getopt.getopt(argv,"hd:e:U:P:u:s:V",["help", "database=", "executable=","username=","password=","url=","testserverid=","envvariables"])
+        opts, args = getopt.getopt(argv,"hd:e:U:P:u:s:V",["help", "database=", "executable=","username=","password=","url=","test-server-id=","env-variables","accept-st-eula"])
     except getopt.GetoptError:
         print('Error: Incorrect parameters. use -h for help.')
         sys.exit(2)
@@ -68,15 +69,19 @@ def main(argv):
             username = arg
         elif opt in ('-u', '--url'):
             url_base = arg
-        elif opt in ('-s', '--testserverid'):
+        elif opt in ('-s', '--test-server-id'):
             server_id = arg
-        elif opt in ('-V', '--envvariables'):
+        elif opt in ('--accept-st-eula'):
+            accept_license = '--accept-license '
+        elif opt in ('-V', '--env-variables'):
             database_name = os.getenv('ST_DATABASE', database_name)
             executable = os.getenv('ST_EXECUTABLE', executable)
             password = os.getenv('ST_PASSWORD', password)
             username = os.getenv('ST_USERNAME', username)
             url_base = os.getenv('ST_URL', url_base)
-            server_id = os.getenv('ST_TESTSERVERID', server_id)
+            server_id = os.getenv('ST_TEST_SERVER_ID', server_id)
+            if 'ACCEPT_ST_EULA' in os.environ:
+                accept_license = '--accept-license '
     logger.info('database_name: %s' % database_name)
     logger.info('executable: %s' % executable)
     logger.info('username: %s' % username)
@@ -84,13 +89,14 @@ def main(argv):
         logger.info('password: %s' % (len(password)*'*'))
     else:
         logger.info('password: %s' % password)
+    logger.info('accept-st-eula: %s' % accept_license)
     logger.info('url: %s' % url_base)
     logger.info('server-id: %s' % server_id)
 
     if server_id == None:
-        branch_cmd = "%s --accept-license --format=json-pretty" % (executable)
+        branch_cmd = "%s %s--format=json-pretty" % (executable, accept_license)
     else:
-        branch_cmd = "%s --accept-license --server-id=%s --format=json-pretty" % (executable, server_id)
+        branch_cmd = "%s %s--server-id=%s --format=json-pretty" % (executable, accept_license, server_id)
     logger.info("command line: %s" % branch_cmd)
 
     proc = subprocess.Popen(branch_cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -169,10 +175,12 @@ def usage_options():
              "  -P, --password=<password>         InfluxDB password\n" + \
              "  -u, --url=<influxDB_URL>          The InfluxDB url\n" + \
              "                                     * if not specified, assumes; http://127.0.0.1:8086/write\n" + \
-             "  -s, --testserverid=<server_id>      The speed test server ID\n" + \
+             "  -s, --test-server-id=<server_id>  The speed test server ID\n" + \
              "                                     * if not specified, allows speedtest to auto select\n" + \
-             "  -V, --envvariables                Script to read environment variables. The environment variables should be all caps and\n" + \
-             "                                      have the same name as the long options E.g. ST_DATABASE"
+             "  -V, --env-variables               Script to read environment variables. Environment variables should be all caps,\n" + \
+             "                                      have the same name as the long options, and '-' are replaced with '_'\n" + \
+             "                                      E.g. ST_TEST_SERVER_ID. ACCEPT_ST_EULA is a special case (no ST prefix).\n" + \
+             "  --accept-st-eula                  Required to accept the speedtest EULA."
 
 # Quoting
 # field value strings;
