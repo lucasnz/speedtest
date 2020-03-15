@@ -148,7 +148,7 @@ def main(argv):
         hostname = quote(socket.gethostname())
     except Exception as e:
         logger.error("Error loading JSON: %s" % repr(e))
-        exit()
+        exit(1)
 
     #data = 'cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000'
     measurement = "speedtest-results"

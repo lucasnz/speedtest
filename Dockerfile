@@ -8,7 +8,7 @@ RUN apt-get update && apt-get -y install cron wget \
  && tar -xzf ookla-speedtest-1.0.0-x86_64-linux.tgz \
  && rm ookla-speedtest-1.0.0-x86_64-linux.tgz
 
-COPY speedtest.py ./
+COPY speedtest* ./
 
 ENV ST_CRON_SCH="10 * * * *"
 CMD (env ; echo MAILTO=\"\") | crontab - \
