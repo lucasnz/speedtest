@@ -45,3 +45,28 @@ services:
     restart: unless-stopped
 ```
 
+## License
+
+This script is dependent on the speedtest.net binary. The speedtest.net binary license states:
+```
+You may only use this Speedtest software and information generated
+from it for personal, non-commercial use, through a command line
+interface on a personal computer. Your use of this software is subject
+to the End User License Agreement, Terms of Use and Privacy Policy at
+these URLs:
+
+        https://www.speedtest.net/about/eula
+        https://www.speedtest.net/about/terms
+        https://www.speedtest.net/about/privacy
+```
+To show you have read and agreed to the speedtest.net terms, you must specify the "ACCEPT_ST_EULA" environment variable.
+
+The MIT License (MIT)
+
+Copyright (c) 2020 Luke Broadbent
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
