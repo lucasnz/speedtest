@@ -61,7 +61,7 @@ these URLs:
 ```
 To show you have read and agreed to the speedtest.net terms, you must specify the "ACCEPT_ST_EULA" environment variable.
 
-The MIT License (MIT)
+The MIT License applies to all other components.
 
 Copyright (c) 2020 Luke Broadbent
 
