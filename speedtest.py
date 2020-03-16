@@ -121,7 +121,6 @@ def main(argv):
     proc = subprocess.Popen(branch_cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (output, error) = proc.communicate()
     output = output.decode('utf-8')
-    output = "blahblah"
     logger.info("speedtest output: %s" % output.replace('\r', '').replace('\n', '\\n'))
     if error:
         logger.error("speedtest error: %s" % error.decode('utf-8'))
