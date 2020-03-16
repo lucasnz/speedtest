@@ -1,12 +1,30 @@
 #/bin/sh
-if [ ! -f "/usr/src/speedtest/speedtest" ]; then
-	echo "speedtest binary does not exist"
+FILE=/usr/src/speedtest1
+if [ -d $FILE ]; then
+	echo "directory '$FILE' exists"
+else
+	echo "directory '$FILE' does not exists"
+	exit 1
+fi
+FILE=/usr/src/speedtest/speedtest
+if [ -f $FILE ]; then
+	echo "file '$FILE' exists"
+else
+	echo "file '$FILE' does not exists"
+	exit 1
+fi
+FILE=/usr/src/speedtest/speedtest.py
+if [ -f $FILE ]; then
+	echo "file '$FILE' exists"
+else
+	echo "file '$FILE' does not exists"
 	exit 1
 fi
 cd /usr/src/speedtest/
 python speedtest.py --accept-st-eula --url https://httpbin.org/post
 ret=$?
+echo "speedtest.py exit code $ret"
 if [ $ret -ne 0 ]; then
-	echo "python script error"
+	echo "script error"
 	exit $ret
 fi
