@@ -1,12 +1,12 @@
 #/bin/sh
-FILE=/usr/src/speedtest1
+FILE=/usr/src/speedtest
 if [ -d $FILE ]; then
 	echo "directory '$FILE' exists"
 else
 	echo "directory '$FILE' does not exists"
 	exit 1
 fi
-FILE=/usr/src/speedtest/speedtest
+FILE=/usr/src/speedtest/speedtest1
 if [ -f $FILE ]; then
 	echo "file '$FILE' exists"
 else
