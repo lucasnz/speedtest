@@ -7,11 +7,11 @@ Container images are configured using parameters passed at runtime.
 
 | Parameter | Function |
 | :----: | --- |
-| `-h <hostname>` | Appears in InfluxDB logs. If not specified the container ID will be used. |
+| `-h <hostname>` | Appears in InfluxDB logs. If not specified, the container ID will be used. |
 | `-e TZ=Europe/London` | Specify a time zone to use e.g. Europe/London. |
 | `-e ACCEPT_ST_EULA=1` | Once you've reviewed the speedtest.net EULA and accepted enable this environment variable. |
 | `-e ST_URL=http://<influxDB_hostname_or_IP>:8086/write` | Required URL for InfluxDB. |
-| `-e ST_TEST_SERVER_ID=123,` | Specify they speedtest server by ID. If not specified, the binary will auto-select a server. For best results, select a server from: https://telcodb.net/explore/speedtest-servers/ |
+| `-e ST_TEST_SERVER_ID=123,345` | Specify the speedtest server IDs. Multiple IDs can be listed via comma separated list. If not specified, the binary will auto select a server. For best results, select a server from: https://telcodb.net/explore/speedtest-servers/ |
 | `-e ST_USERNAME=<InfluxDB_username>` | InfluxDB username (required if authentication is enabled in InfluxDB). |
 | `-e ST_PASSWORD=<InfluxDB_paasword>` | InfluxDB password (required if authentication is enabled in InfluxDB). |
 | `-e ST_DATABASE=<InfluxDB_database>` | InfluxDB database. Defaults to `speedtest` if not specified. |

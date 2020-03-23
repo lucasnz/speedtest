@@ -35,7 +35,7 @@ import os
 
 def main(argv):
 
-    server_id = None #'18474'
+    server_ids = None #'18474'
     log_file = "speedtest.log"
     if sys.platform == "win32":
         executable = 'speedtest.exe'
@@ -89,7 +89,7 @@ def main(argv):
         elif opt in ('-u', '--url'):
             url_base = arg
         elif opt in ('-s', '--test-server-id'):
-            server_id = arg
+            server_ids = arg
         elif opt in ('--accept-st-eula'):
             accept_license = '--accept-license '
         elif opt in ('-V', '--env-variables'):
@@ -98,7 +98,7 @@ def main(argv):
             password = os.getenv('ST_PASSWORD', password)
             username = os.getenv('ST_USERNAME', username)
             url_base = os.getenv('ST_URL', url_base)
-            server_id = os.getenv('ST_TEST_SERVER_ID', server_id)
+            server_ids = os.getenv('ST_TEST_SERVER_ID', server_ids)
             if 'ACCEPT_ST_EULA' in os.environ:
                 accept_license = '--accept-license '
     logger.info('database_name: %s' % database_name)
@@ -110,75 +110,81 @@ def main(argv):
         logger.info('password: %s' % password)
     logger.info('accept-st-eula: %s' % accept_license)
     logger.info('url: %s' % url_base)
-    logger.info('server-id: %s' % server_id)
-
-    if server_id == None:
-        branch_cmd = "%s %s--format=json-pretty" % (executable, accept_license)
+    logger.info('server-id: %s' % server_ids)
+    
+    if server_ids != None and "," in server_ids:
+       server_ids = server_ids.split(",")
     else:
-        branch_cmd = "%s %s--server-id=%s --format=json-pretty" % (executable, accept_license, server_id)
-    logger.info("command line: %s" % branch_cmd)
+        server_ids = [server_ids]
 
-    proc = subprocess.Popen(branch_cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    (output, error) = proc.communicate()
-    output = output.decode('utf-8')
-    logger.info("speedtest output: %s" % output.replace('\r', '').replace('\n', '\\n'))
-    if error:
-        logger.error("speedtest error: %s" % error.decode('utf-8'))
+    for server_id in server_ids:
+        if server_id == None:
+            branch_cmd = "%s %s--format=json-pretty" % (executable, accept_license)
+        else:
+            branch_cmd = "%s %s--server-id=%s --format=json-pretty" % (executable, accept_license, server_id)
+        logger.info("command line: %s" % branch_cmd)
 
-    try:
-        output_json = json.loads(output)
+        proc = subprocess.Popen(branch_cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (output, error) = proc.communicate()
+        output = output.decode('utf-8')
+        logger.info("speedtest output: %s" % output.replace('\r', '').replace('\n', '\\n'))
+        if error:
+            logger.error("speedtest error: %s" % error.decode('utf-8'))
 
-        timestamp = datetime.strptime(output_json['timestamp']+'UTC', '%Y-%m-%dT%H:%M:%SZ%Z')
-        timestamp_unix = int((timestamp - datetime(1970, 1, 1)).total_seconds())
-        #timestamp_unix_nano = timestamp_unix * 1000 * 1000
+        try:
+            output_json = json.loads(output)
 
-        #fields - floats do not need to be escaped
-        jitter = float(output_json['ping']['jitter'])
-        latency = float(output_json['ping']['latency'])
-        download_Mbps = round((output_json['download']['bandwidth'])*8/1000/1000, 2)
-        upload_Mbps = round((output_json['upload']['bandwidth'])*8/1000/1000, 2)
-        result_url = quote(output_json['result']['url'], 3)
-        external_IP = quote(output_json['interface']['externalIp'], 3)
-        
-        #tags
-        server_id = quote(output_json['server']['id'])
-        server_name = quote(output_json['server']['name'])
-        server_location = quote(output_json['server']['location'])
-        server_country = quote(output_json['server']['country'])
-        hostname = quote(socket.gethostname())
-    except Exception as e:
-        logger.error("Error loading JSON: %s" % repr(e))
-        exit(1)
+            timestamp = datetime.strptime(output_json['timestamp']+'UTC', '%Y-%m-%dT%H:%M:%SZ%Z')
+            timestamp_unix = int((timestamp - datetime(1970, 1, 1)).total_seconds())
+            #timestamp_unix_nano = timestamp_unix * 1000 * 1000
 
-    #data = 'cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000'
-    measurement = "speedtest-results"
-    tags =   "hostname=%s," % hostname + \
-             "server-country=%s," % server_country + \
-             "server-id=%s," % server_id + \
-             "server-location=%s," % server_location + \
-             "server-name=%s" % server_name
-    fields = "download-bandwidth=%s," % download_Mbps + \
-             "external-IP=%s," % external_IP + \
-             "jitter=%s," % jitter + \
-             "latency=%s," % latency + \
-             "result-url=%s," % result_url + \
-             "upload-bandwidth=%s" % upload_Mbps
+            #fields - floats do not need to be escaped
+            jitter = float(output_json['ping']['jitter'])
+            latency = float(output_json['ping']['latency'])
+            download_Mbps = round((output_json['download']['bandwidth'])*8/1000/1000, 2)
+            upload_Mbps = round((output_json['upload']['bandwidth'])*8/1000/1000, 2)
+            result_url = quote(output_json['result']['url'], 3)
+            external_IP = quote(output_json['interface']['externalIp'], 3)
+            
+            #tags
+            server_id = quote(output_json['server']['id'])
+            server_name = quote(output_json['server']['name'])
+            server_location = quote(output_json['server']['location'])
+            server_country = quote(output_json['server']['country'])
+            hostname = quote(socket.gethostname())
+        except Exception as e:
+            logger.error("Error loading JSON: %s" % repr(e))
+            exit(1)
 
-    data = "%s,%s %s %s" % (measurement, tags, fields, timestamp_unix)
-    logger.info("data to send: %s" % data)
+        #data = 'cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000'
+        measurement = "speedtest-results"
+        tags =   "hostname=%s," % hostname + \
+                 "server-country=%s," % server_country + \
+                 "server-id=%s," % server_id + \
+                 "server-location=%s," % server_location + \
+                 "server-name=%s" % server_name
+        fields = "download-bandwidth=%s," % download_Mbps + \
+                 "external-IP=%s," % external_IP + \
+                 "jitter=%s," % jitter + \
+                 "latency=%s," % latency + \
+                 "result-url=%s," % result_url + \
+                 "upload-bandwidth=%s" % upload_Mbps
 
-    url = '%s?db=%s&precision=s' % (url_base, database_name)
-    #url = '%s?db=%s&u=%s&p=%s&precision=s' % (url_base, database_name, username, password)
-    req = Request(url, data.encode('utf-8'))
-    if username != None and password != None:
-        base64string = b64encode(("%s:%s" % (username, password)).encode())
-        req.add_header("Authorization", "Basic %s" % base64string.decode())
-    req.add_header("Content-Type", "text")
-    try:
-        resp = urlopen(req).read().decode('utf-8')
-        logger.info("response: %s" % resp)
-    except Exception as e:
-        logger.error("Error writing data: %s" % repr(e))
+        data = "%s,%s %s %s" % (measurement, tags, fields, timestamp_unix)
+        logger.info("data to send: %s" % data)
+
+        url = '%s?db=%s&precision=s' % (url_base, database_name)
+        #url = '%s?db=%s&u=%s&p=%s&precision=s' % (url_base, database_name, username, password)
+        req = Request(url, data.encode('utf-8'))
+        if username != None and password != None:
+            base64string = b64encode(("%s:%s" % (username, password)).encode())
+            req.add_header("Authorization", "Basic %s" % base64string.decode())
+        req.add_header("Content-Type", "text")
+        try:
+            resp = urlopen(req).read().decode('utf-8')
+            logger.info("response: %s" % resp)
+        except Exception as e:
+            logger.error("Error writing data: %s" % repr(e))
 
 def usage_options():
     return   "Usage: speedtest.py [<options>]\n" + \
