@@ -6,7 +6,7 @@ else
 	echo "directory '$FILE' does not exists"
 	exit 1
 fi
-FILE=/usr/src/speedtest/speedtest
+FILE=/usr/bin/speedtest
 if [ -f $FILE ]; then
 	echo "file '$FILE' exists"
 else
