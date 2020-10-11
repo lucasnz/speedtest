@@ -40,7 +40,7 @@ def main(argv):
     if sys.platform == "win32":
         executable = 'speedtest.exe'
     else:
-        executable = './speedtest'
+        executable = 'speedtest'
         if os.path.isdir("/var/log/speedtest"):
             log_file = '/var/log/speedtest/speedtest.log'
 
