@@ -1,4 +1,4 @@
 sut:
   build: .
-  command: ["sh", "-c", "wget -O speedtest_build_test.sh https://raw.githubusercontent.com/lucasnz/speedtest/master/speedtest_build_test.sh && chmod +x speedtest_build_test.sh && ./speedtest_build_test.sh"]
+  command: ["sh", "-c", "python3 -c \"from urllib.request import urlretrieve; urlretrieve('https://raw.githubusercontent.com/lucasnz/speedtest/master/speedtest_build_test.sh', 'speedtest_build_test.sh')\" && chmod +x speedtest_build_test.sh && ./speedtest_build_test.sh"]
   
