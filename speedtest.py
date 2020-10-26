@@ -51,6 +51,7 @@ def main(argv):
     username = None
     password = None
     accept_license = ''
+    exit_code = 0
     
     # Set up a specific logger with our desired output level
     logger = logging.getLogger('speedtest')
@@ -154,7 +155,8 @@ def main(argv):
             hostname = quote(socket.gethostname())
         except Exception as e:
             logger.error("Error loading JSON: %s" % repr(e))
-            exit(1)
+            exit_code = 1
+            continue
 
         #data = 'cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000'
         measurement = "speedtest-results"
@@ -185,6 +187,9 @@ def main(argv):
             logger.info("response: %s" % resp)
         except Exception as e:
             logger.error("Error writing data: %s" % repr(e))
+            exit_code = 1
+
+    exit(exit_code)
 
 def usage_options():
     return   "Usage: speedtest.py [<options>]\n" + \
