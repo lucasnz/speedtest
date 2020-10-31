@@ -33,6 +33,8 @@ import logging
 import logging.handlers
 import os
 
+import re
+
 def main(argv):
 
     server_ids = None #'18474'
@@ -151,6 +153,11 @@ def main(argv):
             server_id = quote(output_json['server']['id'])
             server_name = quote(output_json['server']['name'])
             server_location = quote(output_json['server']['location'])
+            #if the server_location length is greater than 4 and
+            #it does not contain any lowercase characters
+            #then set it to title case
+            if len(server_location) > 4 and len(re.findall("[a-z]", server_location)) == 0:
+                server_location = server_location.title()
             server_country = quote(output_json['server']['country'])
             hostname = quote(socket.gethostname())
         except Exception as e:
