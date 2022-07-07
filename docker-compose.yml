@@ -1,0 +1,61 @@
+---
+version: '3.6'
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: speedtest_grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=adminpassword
+    volumes:
+      - ./lib_grafana:/var/lib/grafana
+      - ./dashboards:/etc/grafana/provisioning/dashboards
+      - ./datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - 3000:3000
+    restart: always
+
+  influxdb:
+    image: influxdb:alpine
+    container_name: speedtest_influxdb
+    environment:
+      - TZ: Europe/London
+    #you may need to initialize influxdb on first run
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=influxuser
+      - DOCKER_INFLUXDB_INIT_PASSWORD=influxpassword
+      - DOCKER_INFLUXDB_INIT_ORG=my-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=mybucket
+      - V1_DB_NAME=speedtest
+      - V1_RP_NAME=v1-rp
+      - V1_AUTH_USERNAME=speedtest
+      - V1_AUTH_PASSWORD=mypassword
+      - DOCKER_INFLUXDB_INIT_RETENTION=52w
+    volumes:
+      - ./data:/var/lib/influxdb2
+      - ./config:/etc/influxdb2
+      - ./db_scripts:/docker-entrypoint-initdb.d
+    #ports only needed if you want to expose influxdb outside the stack
+    #ports:
+    #  - 8086:8086
+    restart: always
+
+  speedtest:
+    image: lucasnz/speedtest
+    container_name: speedtest
+    hostname: docker_speedtest
+    environment:
+      - TZ=Europe/London
+      - ACCEPT_ST_EULA=1
+      - ST_DATABASE=speedtest
+      - ST_URL=http://influxdb:8086/write
+      - ST_TEST_SERVER_ID=28314,16805,7317
+      - ST_USERNAME=speedtest
+      - ST_PASSWORD=mypassword
+      #- ST_CRON_SCH=27 * * * *
+      #- ST_CRON_SCH=10 1-23/4 * * *
+      - ST_CRON_SCH=45 22,2-6/4 * * *
+    volumes:
+      - ./speedtest_logs/:/var/log/speedtest/
+    restart: always

@@ -1,0 +1,19 @@
+apiVersion: 1
+
+datasources:
+- id: 1
+  orgId: 1
+  name: InfluxDB-speedtest
+  type: influxdb
+  access: proxy
+  url: http://influxdb:8086
+  password: ''
+  user: ''
+  database: speedtest
+  basicAuth: true
+  basicAuthUser: speedtest
+  withCredentials: false
+  isDefault: false
+  jsonData: {}
+  secureJsonData:
+    basicAuthPassword: mypassword

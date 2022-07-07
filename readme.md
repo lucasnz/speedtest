@@ -1,6 +1,27 @@
 # Speedtest
 Runs a speedtest on a schedule using the speedtest.net Linux binary then sends the logs to InfluxDB. You must read and accept the speedtest.net EULA before deploying this container.
 
+## Setup Guide
+Download and extract the required files from my github, here:
+https://github.com/lucasnz/speedtest-docker/archive/refs/heads/master.zip
+
+#### Set the setup.sh as executable:
+chmod 755 setup.sh
+#### Run the command:
+./setup.sh
+#### Configure passwords in docker-compose.yml and datasources/all.yml
+vi docker-compose.yml
+vi datasources/all.yml
+
+#### Start the programme:
+docker-compose up
+
+#### Configure Grafana
+Access grafana by navigating to:
+http://docker-host:3000/
+Log in with the grafana admin credential specified in the docker-compose file.
+Click Configuration, then preferences to set the "Speed Test" Dashboard as the Home Dashboard.
+
 ## Parameters
 
 Container images are configured using parameters passed at runtime.
@@ -24,25 +45,67 @@ Example docker-compose file.
 
 ```
 ---
----
-version: '2'
+version: '3.6'
+
 services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: speedtest_grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=adminpassword
+    volumes:
+      - ./lib_grafana:/var/lib/grafana
+      - ./dashboards:/etc/grafana/provisioning/dashboards
+      - ./datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - 3000:3000
+    restart: always
+
+  influxdb:
+    image: influxdb:alpine
+    container_name: speedtest_influxdb
+    environment:
+      - TZ: Europe/London
+    #you may need to initialize influxdb on first run
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=influxuser
+      - DOCKER_INFLUXDB_INIT_PASSWORD=influxpassword
+      - DOCKER_INFLUXDB_INIT_ORG=my-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=mybucket
+      - V1_DB_NAME=speedtest
+      - V1_RP_NAME=v1-rp
+      - V1_AUTH_USERNAME=speedtest
+      - V1_AUTH_PASSWORD=mypassword
+      - DOCKER_INFLUXDB_INIT_RETENTION=52w
+    volumes:
+      - ./data:/var/lib/influxdb2
+      - ./config:/etc/influxdb2
+      - ./db_scripts:/docker-entrypoint-initdb.d
+    #ports only needed if you want to expose influxdb outside the stack
+    #ports:
+    #  - 8086:8086
+    restart: always
+
   speedtest:
-    image: lucasnz/speedtest:latest
+    image: lucasnz/speedtest
     container_name: speedtest
     hostname: docker_speedtest
     environment:
-      TZ: Pacific/Auckland
-      ACCEPT_ST_EULA: 1
-      ST_URL: http://192.168.1.10:8086/write
-      ST_TEST_SERVER_ID: 123
-      ST_USERNAME: speedtest
-      ST_PASSWORD: speedtest
-      ST_DATABASE: speedtest
-      ST_CRON_SCH: 50 * * * *
+      - TZ=Europe/London
+      - ACCEPT_ST_EULA=1
+      - ST_DATABASE=speedtest
+      - ST_URL=http://influxdb:8086/write
+      - ST_TEST_SERVER_ID=28314,16805,7317
+      - ST_USERNAME=speedtest
+      - ST_PASSWORD=mypassword
+      #- ST_CRON_SCH=27 * * * *
+      #- ST_CRON_SCH=10 1-23/4 * * *
+      - ST_CRON_SCH=45 22,2-6/4 * * *
     volumes:
-      - ./logs/:/var/log/speedtest/
-    restart: unless-stopped
+      - ./speedtest_logs/:/var/log/speedtest/
+    restart: always
+
 ```
 
 ## License
