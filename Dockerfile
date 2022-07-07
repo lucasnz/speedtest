@@ -3,9 +3,9 @@ FROM python:3-slim-bullseye
 WORKDIR /usr/src/speedtest
 
 RUN apt-get update \
- && apt-get -y install curl \
- && curl -s https://install.speedtest.net/app/cli/install.deb.sh | bash \
- && apt-get -y install speedtest cron \
+ && apt-get -y install curl cron \
+ && curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash \
+ && apt-get -y install speedtest \
  && rm -rf /var/lib/apt/lists/* \
  && mkdir /var/log/speedtest
  
