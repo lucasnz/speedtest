@@ -2,25 +2,32 @@
 Runs a speedtest on a schedule using the speedtest.net Linux binary then sends the logs to InfluxDB. You must read and accept the speedtest.net EULA before deploying this container.
 
 ## Setup Guide
-Download and extract the required files from my github, here:
-https://github.com/lucasnz/speedtest-docker/archive/refs/heads/master.zip
+Download and extract the required files from my github, here: https://github.com/lucasnz/speedtest/archive/refs/heads/master.zip
 
 #### Set the setup.sh as executable:
 chmod 755 setup.sh
+
 #### Run the command:
 ./setup.sh
+
 #### Configure passwords in docker-compose.yml and datasources/all.yml
-vi docker-compose.yml
+vi docker-compose.yml  
 vi datasources/all.yml
 
 #### Start the programme:
 docker-compose up
 
 #### Configure Grafana
-Access grafana by navigating to:
-http://docker-host:3000/
-Log in with the grafana admin credential specified in the docker-compose file.
+Access grafana by navigating to: http://docker-host:3000/  
+Log in with the grafana admin credential specified in the docker-compose file.  
 Click Configuration, then preferences to set the "Speed Test" Dashboard as the Home Dashboard.
+
+## Speedtest Server ID
+The following two speedtest websites will list the nearest speedtest servers and their IDs:
+* https://www.speedtest.net/speedtest-servers-static.php
+* https://www.speedtest.net/api/js/servers?limit=10
+
+Alternatively, you can use the speedtest.net website to obtain server IDs using the instructions here: https://www.dcmembers.com/skwire/how-to-find-a-speedtest-net-server-id/
 
 ## Parameters
 
@@ -32,14 +39,14 @@ Container images are configured using parameters passed at runtime.
 | `-e TZ=Europe/London` | Specify a time zone to use e.g. Europe/London. |
 | `-e ACCEPT_ST_EULA=1` | Once you've reviewed the speedtest.net EULA and accepted enable this environment variable. |
 | `-e ST_URL=http://<influxDB_hostname_or_IP>:8086/write` | Required URL for InfluxDB. |
-| `-e ST_TEST_SERVER_ID=123,345` | Specify the speedtest server IDs. Multiple IDs can be listed via comma separated list. If not specified, the binary will auto select a server. For best results, select a server from: https://telcodb.net/explore/speedtest-servers/ |
+| `-e ST_TEST_SERVER_ID=123,345` | Specify the speedtest server IDs. Multiple IDs can be listed via comma separated list. If not specified, the binary will auto select a server. For best results, specify server IDs you know to work well. |
 | `-e ST_USERNAME=<InfluxDB_username>` | InfluxDB username (required if authentication is enabled in InfluxDB). |
 | `-e ST_PASSWORD=<InfluxDB_paasword>` | InfluxDB password (required if authentication is enabled in InfluxDB). |
 | `-e ST_DATABASE=<InfluxDB_database>` | InfluxDB database. Defaults to `speedtest` if not specified. |
 | `-e ST_CRON_SCH=<cron_time>` | cron schedule for test. Defaults to `10 * * * *` if not specified. |
 | `-v ./logs/:/var/log/speedtest/` | Log files reside here and can optionally be retained by mapping the volume. |
 
-### docker-compose
+## docker-compose
 
 Example docker-compose file.
 
