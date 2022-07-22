@@ -62,7 +62,7 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=adminpassword
     volumes:
-      - ./lib_grafana:/var/lib/grafana
+      - ./grafana_config:/var/lib/grafana
       - ./dashboards:/etc/grafana/provisioning/dashboards
       - ./datasources:/etc/grafana/provisioning/datasources
     ports:
@@ -73,7 +73,7 @@ services:
     image: influxdb:alpine
     container_name: speedtest_influxdb
     environment:
-      - TZ: Europe/London
+      - TZ=Europe/London
     #you may need to initialize influxdb on first run
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=influxuser
