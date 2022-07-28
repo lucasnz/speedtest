@@ -121,7 +121,7 @@ def main(argv):
         server_ids = [server_ids]
 
     for server_id in server_ids:
-        if server_id == None:
+        if server_id == None or server_id == '*':
             branch_cmd = "%s %s--format=json-pretty" % (executable, accept_license)
         else:
             branch_cmd = "%s %s--server-id=%s --format=json-pretty" % (executable, accept_license, server_id)
