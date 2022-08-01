@@ -34,6 +34,7 @@ import logging.handlers
 import os
 
 import re
+import random
 
 def main(argv):
 
@@ -53,12 +54,11 @@ def main(argv):
     username = None
     password = None
     accept_license = ''
+    num_servers = 0
     exit_code = 0
-    
+
     # Set up a specific logger with our desired output level
     logger = logging.getLogger('speedtest')
-    #logger.info(logger.handlers)
-    #if logger.handlers == []:
     logger.setLevel(logging.DEBUG)
     c_handler = logging.StreamHandler(sys.stdout)
     f_handler = logging.handlers.RotatingFileHandler(
@@ -71,7 +71,7 @@ def main(argv):
     logger.info("Script begin")
 
     try:
-        opts, args = getopt.getopt(argv,"hd:e:U:P:u:s:V",["help", "database=", "executable=","username=","password=","url=","test-server-id=","env-variables","accept-st-eula"])
+        opts, args = getopt.getopt(argv,"hd:e:U:P:u:s:n:V",["help", "database=", "executable=","username=","password=","url=","test-server-id=","accept-st-eula", "num-servers=","env-variables"])
     except getopt.GetoptError:
         print('Error: Incorrect parameters. use -h for help.')
         sys.exit(2)
@@ -95,6 +95,11 @@ def main(argv):
             server_ids = arg
         elif opt in ('--accept-st-eula'):
             accept_license = '--accept-license '
+        elif opt in ('n', '--num-servers'):
+            try:
+                num_servers = int(arg)
+            except:
+                pass
         elif opt in ('-V', '--env-variables'):
             database_name = os.getenv('ST_DATABASE', database_name)
             executable = os.getenv('ST_EXECUTABLE', executable)
@@ -113,14 +118,22 @@ def main(argv):
         logger.info('password: %s' % password)
     logger.info('accept-st-eula: %s' % accept_license)
     logger.info('url: %s' % url_base)
-    logger.info('server-id: %s' % server_ids)
-    
+    logger.info('test-server-id: %s' % server_ids)
+    logger.info('num-servers: %s' % num_servers)
+
     if server_ids != None and "," in server_ids:
        server_ids = server_ids.split(",")
     else:
         server_ids = [server_ids]
 
-    for server_id in server_ids:
+    # if we have a set num of servers shuffle the list to randomise the ones we test against
+    if num_servers > 0 and num_servers <= len(server_ids):
+        random.shuffle(server_ids)
+    else:
+        num_servers = len(server_ids)
+
+    for i in range(num_servers):
+        server_id = server_ids[i]
         if server_id == None or server_id == '*':
             branch_cmd = "%s %s--format=json-pretty" % (executable, accept_license)
         else:
@@ -214,6 +227,8 @@ def usage_options():
              "                                     * if not specified, assumes; http://127.0.0.1:8086/write\n" + \
              "  -s, --test-server-id=<server_id>  The speed test server ID\n" + \
              "                                     * if not specified, allows speedtest to auto select\n" + \
+             "  -n, --num-servers=<num>           The number speed test servers to test on this run\n" + \
+             "                                     * if not specified, all servers will be tested.\n" + \
              "  -V, --env-variables               Script to read environment variables. Environment variables should be all caps,\n" + \
              "                                      have the same name as the long options, and '-' are replaced with '_'\n" + \
              "                                      E.g. ST_TEST_SERVER_ID. ACCEPT_ST_EULA is a special case (no ST prefix).\n" + \
