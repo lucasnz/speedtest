@@ -27,7 +27,7 @@ import getopt
 try:
     from urllib.request import Request, urlopen  # Python 3
 except ImportError:
-    from urllib2 import Request, urlopen  # Python 2
+    from urllib2 import Request, urlopen  # type: ignore - Python 2
 
 import logging
 import logging.handlers
