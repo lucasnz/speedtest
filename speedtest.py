@@ -107,6 +107,10 @@ def main(argv):
             username = os.getenv('ST_USERNAME', username)
             url_base = os.getenv('ST_URL', url_base)
             server_ids = os.getenv('ST_TEST_SERVER_ID', server_ids)
+            try:
+                num_servers = int(os.getenv('ST_NUM_SERVERS', num_servers))
+            except:
+                pass
             if 'ACCEPT_ST_EULA' in os.environ:
                 accept_license = '--accept-license '
     logger.info('database_name: %s' % database_name)
