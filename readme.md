@@ -40,7 +40,7 @@ Container images are configured using parameters passed at runtime.
 | `-e ACCEPT_ST_EULA=1` | Once you've reviewed the speedtest.net EULA and accepted enable this environment variable. |
 | `-e ST_URL=http://<influxDB_hostname_or_IP>:8086/write` | Required URL for InfluxDB. |
 | `-e ST_TEST_SERVER_ID=123,345,*` | Specify the speedtest server IDs. Multiple IDs can be listed via comma separated list. If not specified or if * is specified, the binary will auto select a server. For best results, specify server IDs you know to work well. |
-| `-e --NUM_SERVERS=<num>` | The number speed test servers to test on this run. If not specified, all servers will be tested. |
+| `-e --ST_NUM_SERVERS=<num>` | The number speed test servers to test on this run. If not specified, all servers will be tested. |
 | `-e ST_USERNAME=<InfluxDB_username>` | InfluxDB username (required if authentication is enabled in InfluxDB). |
 | `-e ST_PASSWORD=<InfluxDB_paasword>` | InfluxDB password (required if authentication is enabled in InfluxDB). |
 | `-e ST_DATABASE=<InfluxDB_database>` | InfluxDB database. Defaults to `speedtest` if not specified. |
@@ -105,7 +105,7 @@ services:
       - ST_DATABASE=speedtest
       - ST_URL=http://influxdb:8086/write
       - ST_TEST_SERVER_ID=28314,16805,7317,*
-      - NUM_SERVERS=2
+      - ST_NUM_SERVERS=2
       - ST_USERNAME=speedtest
       - ST_PASSWORD=mypassword
       #- ST_CRON_SCH=27 * * * *
